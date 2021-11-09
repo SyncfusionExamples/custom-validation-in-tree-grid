@@ -1,0 +1,42 @@
+﻿@page "/customvalidator"
+
+@using Microsoft.AspNetCore.Components.Forms;
+@using System.ComponentModel.DataAnnotations;
+@using Syncfusion.Blazor.Grids;
+@using Syncfusion.Blazor.TreeGrid;
+@using Custom_Validation.Data
+@inject WeatherForecastService ForecastService
+
+<span>Custom Validator Component</span>
+<SfTreeGrid @ref="TreeGrid" TValue="Tree" DataSource="GridData" IdMapping="TaskId" ParentIdMapping="ParentId" TreeColumnIndex="0"
+            Toolbar="@(new List<string>() { "Add", "Edit", "Update", "Cancel", "Delete" })">
+    <TreeGridEditSettings AllowAdding="true" AllowEditing="true" AllowDeleting="true"
+                          Mode="Syncfusion.Blazor.TreeGrid.EditMode.Dialog">
+        <Validator>
+            @{
+                ValidatorTemplateContext txt = context as ValidatorTemplateContext;
+            }
+            <MyCustomValidator context="@txt"></MyCustomValidator>
+            <ValidationMessage For="@(() => (txt.EditContext.Model as Tree).Duration)"></ValidationMessage>
+
+        </Validator>
+
+    </TreeGridEditSettings>
+    <TreeGridColumns>
+        <TreeGridColumn Field=@nameof(Tree.TaskId) HeaderText="Task ID" IsPrimaryKey="true" TextAlign="TextAlign.Right" Width="120"></TreeGridColumn>
+        <TreeGridColumn Field=@nameof(Tree.Priority) HeaderText="Priority" Width="120"></TreeGridColumn>
+        <TreeGridColumn Field=@nameof(Tree.Duration) HeaderText="Duration" TextAlign="TextAlign.Right" Width="120"></TreeGridColumn>
+    </TreeGridColumns>
+
+</SfTreeGrid>
+
+@code{
+
+    SfTreeGrid<Tree> TreeGrid { get; set; }
+    private List<Tree> GridData;
+    protected override void OnInitialized()
+    {
+        GridData = ForecastService.GetTree();
+    }
+
+}
